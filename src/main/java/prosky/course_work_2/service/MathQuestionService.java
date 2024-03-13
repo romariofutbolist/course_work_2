@@ -6,14 +6,14 @@ import prosky.course_work_2.exceptions.QuestionNotFoundException;
 import prosky.course_work_2.model.Question;
 import prosky.course_work_2.repository.QuestionRepository;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Random;
 
-@Service("java")
-public class JavaQuestionService implements QuestionService {
-
+@Service("math")
+public class MathQuestionService implements QuestionService {
     private final QuestionRepository repository;
 
-    public JavaQuestionService(@Qualifier("javaRepository") QuestionRepository repository) {
+    public MathQuestionService(@Qualifier("mathRepository") QuestionRepository repository) {
         this.repository = repository;
     }
 
@@ -54,15 +54,4 @@ public class JavaQuestionService implements QuestionService {
         }
         throw new QuestionNotFoundException("Вопросов в коллекции нет");
     }
-
- /*   public Question remove(String question, String answer) {
-        Question removeQuestion = new Question(question, answer);
-        if (!questions.contains(removeQuestion)) {
-            throw new QuestionNotFoundException("Такой вопрос не найден");
-        }
-        questions.remove(removeQuestion);
-        return removeQuestion;
-    }
-
-  */
 }

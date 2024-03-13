@@ -6,28 +6,27 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import prosky.course_work_2.model.Question;
-import prosky.course_work_2.repository.QuestionRepository;
-import prosky.course_work_2.service.JavaQuestionService;
 import prosky.course_work_2.service.QuestionService;
 
 import java.util.Collection;
 
 @RestController
-@RequestMapping("/exam/java")
-public class JavaQuestionController {
+@RequestMapping("/exam/math")
+public class MathQuestionController {
+
     private final QuestionService service;
 
-    public JavaQuestionController(@Qualifier("java") QuestionService service) {
+    public MathQuestionController(@Qualifier("math") QuestionService service) {
         this.service = service;
     }
 
     @GetMapping("/add")
-    public Question addQuestion(@RequestParam("question") String question, @RequestParam("answer") String answer){
+    public Question addQuestion(@RequestParam("question") String question, @RequestParam("answer") String answer) {
         return service.add(question, answer);
     }
 
     @GetMapping("/remove")
-    public Question removeQuestion(@RequestParam("question") String question, @RequestParam("answer") String answer){
+    public Question removeQuestion(@RequestParam("question") String question, @RequestParam("answer") String answer) {
         return service.remove(new Question(question, answer));
     }
 

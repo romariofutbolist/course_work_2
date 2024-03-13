@@ -1,20 +1,13 @@
 package prosky.course_work_2.service;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import prosky.course_work_2.exceptions.QuestionStorageIsFullException;
 import prosky.course_work_2.model.Question;
-import static org.mockito.Mockito.*;
-
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -22,41 +15,53 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ExaminerServiceImplTest {
 
+    static List<Question> MATH_QUESTIONS = List.of(
+            new Question("foo", "bar"),
+            new Question("foo1", "bar1"));
+
+    static List<Question> JAVA_QUESTIONS = List.of(
+            new Question("foo2", "bar2"),
+            new Question("foo3", "bar3"));
+
     @Mock
     private JavaQuestionService javaQuestionService;
 
-    //  @InjectMocks
-    // private ExaminerServiceImpl examinerService;
-    ExaminerServiceImpl examinerServiceImpl;
+    @Mock
+    private MathQuestionService mathQuestionService;
+
+    private ExaminerService examinerService;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        examinerServiceImpl = new ExaminerServiceImpl(javaQuestionService);
+        examinerService = new ExaminerServiceImpl(javaQuestionService, mathQuestionService);
+
+        when(javaQuestionService.getAll()).thenReturn(JAVA_QUESTIONS);
+
+        when(mathQuestionService.getAll()).thenReturn(MATH_QUESTIONS);
+
     }
 
     @Test
-    void getQuestions() {
-        Question question1 = new Question("foo", "bar");
-        Question question2 = new Question("foo1", "bar1");
-        Question question3 = new Question("foo2", "bar2");
-        Question question4 = new Question("foo3", "bar3");
-        Question question5 = new Question("foo4", "bar4");
-        Question question6 = new Question("foo5", "bar5");
+    void testException() {
 
-        Set<Question> setQuestions = new HashSet<>(List.of(
-                question1, question2, question3, question4, question5, question6));
+        assertThrows(QuestionStorageIsFullException.class, () -> examinerService.getQuestions(10));
+    }
 
-        when(javaQuestionService.getAll()).thenReturn(setQuestions);
+    @Test
+    void testRandomException() {
 
-        assertThrows(QuestionStorageIsFullException.class, ()-> examinerServiceImpl.getQuestions(10));
-        //assertThrows(EmployeeNotFoundException.class, () -> departmentService.getEmployeeWithMinSalary(111));
+   //     assertIterableEquals(examinerServiceImpl.getQuestions(6), setQuestions);
 
-        assertIterableEquals(examinerServiceImpl.getQuestions(6),setQuestions);
+        when(javaQuestionService.getRandomQuestion()).thenReturn(JAVA_QUESTIONS.get(0));
+        when(mathQuestionService.getRandomQuestion()).
+                thenReturn(MATH_QUESTIONS.get(0)).
+                thenReturn(MATH_QUESTIONS.get(1));
 
-        when(javaQuestionService.getRandomQuestion()).thenReturn(question1,question2);
+        var actual = examinerService.getQuestions(3);
+        assertTrue(actual.contains(
+                JAVA_QUESTIONS.get(0)));
 
-        assertEquals(examinerServiceImpl.getQuestions(2).size(), 2);
+        assertEquals(actual.size(), 3);
 
     }
 }
